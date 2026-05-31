@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NANI NANJI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700;9..40,900&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange:  #FF5000;
+    --navy:    #1A2B7A;
+    --teal:    #00A090;
+    --amber:   #F5B800;
+    --violet:  #4B5EFC;
+    --green:   #00B86B;
+    --stone:   #8F9BA3;
+    --bg:      #E9E8E4;
+    --bg2:     #F0EFEb;
+    --white:   #FFFFFF;
+    --text:    #181818;
+    --muted:   #888;
+    --border:  #D6D5D0;
+  }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .dm   { font-family: 'DM Sans', sans-serif; }
+  .mono { font-family: 'DM Mono', monospace; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ══════════════════════════════════════
+     HEADER
+  ══════════════════════════════════════ */
+  .app-header {
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: sticky; top: 0; z-index: 30;
+  }
+  .app-logo {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+    color: var(--navy);
+    white-space: nowrap;
+    position: relative;
+  }
+  .app-logo span { color: var(--orange); }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    display: flex;
+    background: var(--bg);
+    border-radius: 50px;
+    padding: 3px;
+    border: 1.5px solid var(--border);
+  }
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 18px;
+    border-radius: 50px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .tab-btn.on {
+    background: var(--white);
+    color: var(--navy);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+  }
+
+  /* ── Header util buttons ── */
+  .hbtn {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 6px 13px;
+    border-radius: 50px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--navy);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .hbtn:hover { background: var(--bg2); }
+  .hbtn.accent { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .hbtn.accent:hover { background: #253499; }
+
+  /* ══════════════════════════════════════
+     QUICK ENTRY
+  ══════════════════════════════════════ */
+  .qe-wrap { position: relative; }
+  .qe-bar {
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .qe-bar:focus-within {
+    border-color: var(--orange);
+    box-shadow: 0 4px 20px rgba(255,80,0,0.14);
+  }
+  .qe-icon { font-size: 17px; opacity: 0.4; flex-shrink: 0; }
+  .qe-input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-size: 14px; font-family: 'Noto Sans TC', sans-serif;
+    color: var(--text);
+  }
+  .qe-input::placeholder { color: #B8B5AE; }
+  .qe-submit {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: var(--navy); color: #fff;
+    border: none; font-size: 22px; line-height: 1;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background 0.15s;
+  }
+  .qe-submit:hover { background: var(--orange); }
+  .qe-preview {
+    margin-top: 7px; padding: 9px 15px;
+    background: var(--white); border-radius: 10px;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; gap: 9px;
+    font-size: 13px; flex-wrap: wrap;
+    animation: slideUp 0.14s ease;
+  }
+
+  /* ══════════════════════════════════════
+     CATEGORY FILTER PILLS
+  ══════════════════════════════════════ */
+  .cat-filter {
+    display: flex; gap: 7px; flex-wrap: nowrap;
+    overflow-x: auto; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .cat-filter::-webkit-scrollbar { display: none; }
+  .cat-pill {
+    flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  /* ══════════════════════════════════════
+     MONTH NAVIGATION
+  ══════════════════════════════════════ */
+  .mo-nav {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 10px;
+  }
+  .mo-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--white); color: var(--navy);
+    font-size: 18px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .mo-btn:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .mo-label {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900; font-size: 22px;
+    color: var(--navy); letter-spacing: -0.5px;
+  }
+
+  /* ══════════════════════════════════════
+     CALENDAR GRID
+  ══════════════════════════════════════ */
+  .cal-wk-row {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 3px;
+  }
+  .cal-wk-cell {
+    text-align: center; font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700; color: var(--stone);
+    padding: 5px 0; letter-spacing: 0.2px;
+  }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+  .cal-cell {
+    background: var(--white);
+    border-radius: 8px;
+    min-height: 92px;
+    padding: 7px 6px 5px;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.1s;
+    position: relative; overflow: hidden;
+    border: 1.5px solid transparent;
+  }
+  .cal-cell:hover { background: #F6F5F2; }
+  .cal-cell.is-today { border-color: var(--orange); }
+  .cal-cell.is-selected {
+    background: #EEF0FF;
+    border-color: var(--violet);
+  }
+  .cal-cell.other-mo {
+    background: transparent; opacity: 0.35;
+    pointer-events: none; border-color: transparent;
+  }
+
+  .day-num {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 13px;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; margin-bottom: 4px;
+    color: var(--navy);
+  }
+  .is-today .day-num {
+    background: var(--orange); color: #fff;
+  }
+
+  /* ── Event chip on calendar ── */
+  .ev-chip {
+    display: block;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+    margin-bottom: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 100%; cursor: pointer;
+    transition: opacity 0.12s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .ev-chip:hover { opacity: 0.72; }
+
+  /* ══════════════════════════════════════
+     DESKTOP SIDE PANEL
+  ══════════════════════════════════════ */
+  .desktop-panel {
+    position: sticky; top: 78px;
+    height: calc(100vh - 96px);
+    overflow-y: auto;
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    border: 1.5px solid var(--border);
+    animation: fadeIn 0.18s ease;
+  }
+
+  /* ══════════════════════════════════════
+     MOBILE BOTTOM SHEET
+  ══════════════════════════════════════ */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(26,43,122,0.25);
+    z-index: 40; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .overlay.on { opacity: 1; pointer-events: all; }
+  .mobile-sheet {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 82vh; background: var(--white);
+    border-radius: 20px 20px 0 0;
+    z-index: 50; overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 -6px 32px rgba(26,43,122,0.12);
+  }
+  .mobile-sheet.on { transform: translateY(0); }
+  .drag-handle {
+    width: 36px; height: 4px;
+    background: var(--border); border-radius: 2px;
+    margin: 13px auto 4px;
+  }
+
+  /* ══════════════════════════════════════
+     PANEL INNER
+  ══════════════════════════════════════ */
+  .panel-hdr {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 16px;
+  }
+  .panel-date {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 900; font-size: 20px; color: var(--navy);
+    line-height: 1.1;
+  }
+  .panel-date small {
+    display: block; font-size: 13px; font-weight: 400;
+    color: var(--muted); font-family: 'Noto Sans TC', sans-serif;
+    margin-top: 2px;
+  }
+  .close-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: var(--bg2);
+    font-size: 17px; color: var(--navy);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .close-btn:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+  /* Mini ledger strip */
+  .mini-led {
+    display: flex; gap: 6px; margin-bottom: 14px;
+    padding: 11px 14px; background: var(--bg2);
+    border-radius: 10px; border: 1px solid var(--border);
+  }
+  .mini-led-col { flex: 1; text-align: center; }
+  .mini-led-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+  .mini-led-val { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 700; }
+
+  /* Entry item */
+  .entry-item {
+    border-radius: 10px; padding: 10px 12px; margin-bottom: 7px;
+    animation: slideUp 0.17s ease;
+    border: 1.5px solid var(--border);
+    border-left-width: 4px;
+  }
+  .entry-note-box {
+    margin-top: 9px; padding: 8px 10px;
+    background: var(--bg2); border-radius: 8px;
+    font-size: 13px; color: #555; line-height: 1.65;
+    white-space: pre-wrap; cursor: text; min-height: 36px;
+  }
+
+  /* ── Category badge ── */
+  .cat-badge {
+    border-radius: 20px; font-size: 11px; font-weight: 700;
+    padding: 2px 9px; white-space: nowrap; flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+    border: 1.5px solid transparent;
+  }
+
+  /* ══════════════════════════════════════
+     FORM ELEMENTS
+  ══════════════════════════════════════ */
+  .f-label {
+    display: block; font-size: 11px; font-weight: 700;
+    color: var(--stone); margin-bottom: 5px;
+    letter-spacing: 0.4px; text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .f-input, .f-select, .f-note {
+    width: 100%; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 9px 12px;
+    font-family: 'Noto Sans TC', sans-serif; font-size: 14px;
+    color: var(--text); background: var(--bg2); outline: none;
+    transition: border-color 0.18s, background 0.18s;
+  }
+  .f-input:focus, .f-select:focus, .f-note:focus {
+    border-color: var(--orange); background: #fff;
+  }
+  .f-note { resize: vertical; line-height: 1.6; }
+  .f-select { background: #fff; cursor: pointer; }
+
+  /* Amount toggle */
+  .amt-toggle { display: flex; gap: 6px; margin-top: 7px; }
+  .amt-btn {
+    flex: 1; padding: 8px; border-radius: 9px;
+    border: 1.5px solid var(--border); background: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 12px;
+    font-weight: 700; cursor: pointer; transition: all 0.15s; color: var(--muted);
+  }
+  .amt-btn.inc.on { background: #EAFFF4; border-color: var(--green); color: #006B3C; }
+  .amt-btn.exp.on { background: #FFF0EA; border-color: var(--orange); color: #CC2A00; }
+
+  /* Buttons */
+  .btn {
+    border: none; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-navy { background: var(--navy); color: #fff; padding: 10px 18px; }
+  .btn-navy:hover { background: var(--orange); }
+  .btn-ghost { background: var(--bg2); color: var(--navy); padding: 8px 14px; border: 1.5px solid var(--border); }
+  .btn-ghost:hover { background: var(--border); }
+  .btn-red  { background: #FFF0EA; color: #CC2A00; padding: 7px 12px; font-size: 12px; }
+  .btn-red:hover { background: #FFE0D0; }
+  .btn-sm { padding: 5px 11px; font-size: 12px; border-radius: 8px; }
+
+  /* ══════════════════════════════════════
+     LEDGER VIEW
+  ══════════════════════════════════════ */
+  .sum-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+    margin-bottom: 22px;
+  }
+  .sum-card {
+    background: var(--white); border-radius: 12px; padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  .sum-label {
+    font-family: 'DM Sans', sans-serif; font-size: 11px;
+    font-weight: 700; color: var(--stone); margin-bottom: 5px;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .sum-val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700; }
+
+  /* Cat breakdown */
+  .cat-break {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+  }
+  .cat-break-card {
+    background: var(--white); border-radius: 10px; padding: 10px 14px;
+    border: 1.5px solid var(--border); min-width: 110px;
+  }
+
+  /* Ledger table */
+  .led-tbl { width: 100%; border-collapse: collapse; }
+  .led-tbl th {
+    background: var(--bg2); padding: 10px 14px;
+    text-align: left; font-size: 11px; font-weight: 700;
+    color: var(--stone); letter-spacing: 0.4px; text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .led-tbl td { padding: 12px 14px; border-bottom: 1px solid var(--bg2); font-size: 14px; }
+  .led-tbl tr:last-child td { border-bottom: none; }
+  .led-tbl tr:hover td { background: #FAFAF7; }
+
+  /* ══════════════════════════════════════
+     ANIMATIONS
+  ══════════════════════════════════════ */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ══════════════════════════════════════
+     SECTION LABELS
+  ══════════════════════════════════════ */
+  .section-label {
+    font-family: 'DM Sans', sans-serif; font-weight: 900;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--orange); margin-bottom: 4px;
+  }
+  .panel-section-title {
+    font-size: 11px; font-weight: 700; color: var(--stone);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin: 16px 0 10px; padding-top: 14px;
+    border-top: 1.5px solid var(--bg2);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ══════════════════════════════════════
+     MOBILE OVERRIDES
+  ══════════════════════════════════════ */
+  @media (max-width: 680px) {
+    .app-header { padding: 0 14px; }
+    .cal-cell { min-height: 64px; padding: 4px 4px 3px; border-radius: 6px; }
+    .day-num  { width: 22px; height: 22px; font-size: 11px; }
+    .ev-chip  { font-size: 10px; padding: 1px 5px; }
+    .mo-label { font-size: 18px; }
+    .sum-grid { grid-template-columns: repeat(3,1fr); gap: 7px; }
+    .sum-val  { font-size: 16px; }
+  }
+  @media (max-width: 420px) {
+    .sum-grid { grid-template-columns: 1fr 1fr; }
+    .sum-grid > :last-child { grid-column: 1/-1; }
+    .app-logo { font-size: 16px; }
+  }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useReducer, useRef, useMemo } = React;
+
+/* ══════════════════════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════════════════════ */
+const CATS = {
+  '開團': { color:'#FF5000', bg:'rgba(255,80,0,0.11)',   text:'#CC2A00', kw:['開團','團購','揪團'] },
+  '私人': { color:'#00A090', bg:'rgba(0,160,144,0.11)',  text:'#006B63', kw:['私人','約會','旅遊','朋友','家人'] },
+  '家事': { color:'#F5B800', bg:'rgba(245,184,0,0.14)',  text:'#7A5500', kw:['家事','打掃','採買','煮飯'] },
+  '接案': { color:'#4B5EFC', bg:'rgba(75,94,252,0.11)',  text:'#2233CC', kw:['接案','設計','提案','客戶','報價'] },
+  '記帳': { color:'#00B86B', bg:'rgba(0,184,107,0.11)',  text:'#006B3C', kw:[] },
+  '記事': { color:'#8F9BA3', bg:'rgba(143,155,163,0.11)',text:'#4A5568', kw:[] },
+};
+const CAT_NAMES = Object.keys(CATS);
+// calendar-visible categories (no 記帳)
+const CAL_CATS = CAT_NAMES.filter(c => c !== '記帳');
+const WD_SUN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const WD_MON = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+/* ══════════════════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════════════════ */
+const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36);
+
+function toDS(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fromDS(s) {
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function daysInMonth(y,m) { return new Date(y,m+1,0).getDate(); }
+function firstDow(y,m,mon) {
+  const d = new Date(y,m,1).getDay();
+  return mon ? (d===0?6:d-1) : d;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PARSER
+══════════════════════════════════════════════════════════════ */
+function parseEntry(raw) {
+  let text = raw.trim();
+  const now = new Date();
+  let date = toDS(now);
+
+  // Date
+  const nwm = text.match(/下週([一二三四五六日])/);
+  if (nwm) {
+    const mp={一:1,二:2,三:3,四:4,五:5,六:6,日:0};
+    const tgt=mp[nwm[1]], d=new Date(now);
+    let diff=(tgt-d.getDay()+7)%7; if(diff===0) diff=7; diff+=7;
+    d.setDate(d.getDate()+diff); date=toDS(d);
+    text=text.replace(nwm[0],'').trim();
+  } else if (text.includes('後天')) {
+    const d=new Date(now); d.setDate(d.getDate()+2); date=toDS(d);
+    text=text.replace('後天','').trim();
+  } else if (text.includes('明天')) {
+    const d=new Date(now); d.setDate(d.getDate()+1); date=toDS(d);
+    text=text.replace('明天','').trim();
+  } else if (text.includes('今天')) {
+    text=text.replace('今天','').trim();
+  } else {
+    const dm=text.match(/^(\d{1,2})\/(\d{1,2})\s*/);
+    if (dm) {
+      date=`${now.getFullYear()}-${dm[1].padStart(2,'0')}-${dm[2].padStart(2,'0')}`;
+      text=text.slice(dm[0].length).trim();
+    }
+  }
+
+  // Amount
+  let amount=null, amtType=null, amtStr=null;
+  const incM=text.match(/(收入|＋|\+)\s*(?:NT\$|＄|\$)?(\d+(?:\.\d+)?)\s*元?/);
+  if (incM) { amtStr=incM[0]; amount=parseFloat(incM[2]); amtType='income'; }
+  if (!amtStr) {
+    const expM=text.match(/(支出|費用|花費|花了)\s*(?:NT\$|＄|\$)?(\d+(?:\.\d+)?)\s*元?/);
+    if (expM) { amtStr=expM[0]; amount=parseFloat(expM[2]); amtType='expense'; }
+  }
+  if (!amtStr) {
+    const gm=text.match(/(?:NT\$|＄|\$)(\d+(?:\.\d+)?)/);
+    if (gm) { amtStr=gm[0]; amount=parseFloat(gm[1]); amtType='expense'; }
+  }
+  if (!amtStr) {
+    const ym=text.match(/(\d+(?:\.\d+)?)\s*元/);
+    if (ym) { amtStr=ym[0]; amount=parseFloat(ym[1]); amtType='expense'; }
+  }
+  if (amtStr) text=text.replace(amtStr,'').trim();
+
+  // Category — $ always → 記帳 (overrides all keyword matching)
+  let category = '記事';
+  if (amount != null) {
+    category = '記帳';
+  } else {
+    for (const name of ['開團','接案','家事','私人']) {
+      if (CATS[name].kw.some(k=>text.includes(k))) { category=name; break; }
+    }
+  }
+
+  return {
+    id:uid(), date,
+    title: text.replace(/\s+/g,' ').trim() || '新項目',
+    category, amount, amtType,
+    note:'', createdAt:Date.now(),
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REDUCER
+══════════════════════════════════════════════════════════════ */
+function reducer(state, a) {
+  switch (a.type) {
+    case 'LOAD':   return a.data;
+    case 'ADD':    return [...state, a.entry];
+    case 'UPDATE': return state.map(e => e.id===a.id ? {...e,...a.patch} : e);
+    case 'DELETE': return state.filter(e => e.id!==a.id);
+    default:       return state;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SMALL COMPONENTS
+══════════════════════════════════════════════════════════════ */
+function CatBadge({ cat }) {
+  const c = CATS[cat] || CATS['記事'];
+  return (
+    <span className="cat-badge" style={{
+      background: c.bg, color: c.text,
+      borderColor: c.color + '40',
+    }}>{cat}</span>
+  );
+}
+
+function EvChip({ entry, onClick }) {
+  const c = CATS[entry.category] || CATS['記事'];
+  return (
+    <div className="ev-chip" style={{ background: c.bg, color: c.text }}
+      onClick={e => { e.stopPropagation(); onClick(); }}
+      title={entry.title}
+    >
+      {entry.title}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ENTRY ITEM  — view + full inline edit mode
+══════════════════════════════════════════════════════════════ */
+function EntryItem({ entry, onUpdate, onDelete }) {
+  const [editing, setEditing] = useState(false);
+  const [eTitle, setETitle] = useState(entry.title);
+  const [eCat,   setECat  ] = useState(entry.category);
+  const [eAmt,   setEAmt  ] = useState(entry.amount != null ? String(entry.amount) : '');
+  const [eAmtT,  setEAmtT ] = useState(entry.amtType || 'expense');
+  const [eNote,  setENote ] = useState(entry.note || '');
+  const [eDate,  setEDate ] = useState(entry.date);
+
+  // Sync if parent entry changes (e.g. after save)
+  useEffect(() => {
+    setETitle(entry.title);
+    setECat(entry.category);
+    setEAmt(entry.amount != null ? String(entry.amount) : '');
+    setEAmtT(entry.amtType || 'expense');
+    setENote(entry.note || '');
+    setEDate(entry.date);
+  }, [entry.id]);
+
+  function saveEdit() {
+    onUpdate(entry.id, {
+      title:   eTitle.trim() || entry.title,
+      category: eCat,
+      amount:  eAmt ? parseFloat(eAmt) : null,
+      amtType: eAmt ? eAmtT : null,
+      note:    eNote.trim(),
+      date:    eDate,
+    });
+    setEditing(false);
+  }
+
+  const c = CATS[eCat] || CATS['記事'];
+  const cv = CATS[entry.category] || CATS['記事'];
+
+  /* ── EDIT MODE ── */
+  if (editing) {
+    return (
+      <div className="entry-item" style={{ borderLeftColor: c.color, background:'#FAFAF8' }}>
+        <div style={{fontSize:11,fontWeight:700,color:'var(--orange)',textTransform:'uppercase',
+          letterSpacing:'0.5px',fontFamily:'DM Sans',marginBottom:12}}>
+          編輯項目
+        </div>
+        <div style={{marginBottom:9}}>
+          <label className="f-label">日期</label>
+          <input type="date" className="f-input" value={eDate} onChange={e=>setEDate(e.target.value)} />
+        </div>
+        <div style={{marginBottom:9}}>
+          <label className="f-label">標題</label>
+          <input type="text" className="f-input" value={eTitle}
+            onChange={e=>setETitle(e.target.value)} autoFocus />
+        </div>
+        <div style={{marginBottom:9}}>
+          <label className="f-label">類別</label>
+          <select className="f-select" value={eCat} onChange={e=>setECat(e.target.value)}>
+            {CAT_NAMES.map(n=><option key={n} value={n}>{n}</option>)}
+          </select>
+        </div>
+        <div style={{marginBottom:9}}>
+          <label className="f-label">金額</label>
+          <input type="number" className="f-input" value={eAmt}
+            onChange={e=>setEAmt(e.target.value)} min="0" step="any" placeholder="0" />
+          {eAmt && (
+            <div className="amt-toggle">
+              <button type="button" className={`amt-btn inc ${eAmtT==='income'?'on':''}`}
+                onClick={()=>setEAmtT('income')}>+ 收入</button>
+              <button type="button" className={`amt-btn exp ${eAmtT==='expense'?'on':''}`}
+                onClick={()=>setEAmtT('expense')}>− 支出</button>
+            </div>
+          )}
+        </div>
+        <div style={{marginBottom:12}}>
+          <label className="f-label">備忘</label>
+          <textarea className="f-note" value={eNote}
+            onChange={e=>setENote(e.target.value)} rows={3} placeholder="備忘…" />
+        </div>
+        <div style={{display:'flex',gap:7}}>
+          <button className="btn btn-navy btn-sm" onClick={saveEdit}>儲存</button>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setEditing(false)}>取消</button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── VIEW MODE ── */
+  return (
+    <div className="entry-item" style={{ borderLeftColor: cv.color }}>
+      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:8 }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:7, flexWrap:'wrap' }}>
+            <CatBadge cat={entry.category} />
+            <span style={{ fontSize:14, fontWeight:600, overflow:'hidden',
+              textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+              {entry.title}
+            </span>
+          </div>
+          {entry.amount != null && (
+            <div className="mono" style={{
+              fontSize:16, fontWeight:700, marginTop:4,
+              color: entry.amtType==='income' ? '#006B3C' : '#CC2A00',
+            }}>
+              {entry.amtType==='income'?'+':'-'}${Number(entry.amount).toLocaleString()}
+            </div>
+          )}
+          {entry.note && (
+            <div style={{fontSize:12,color:'var(--muted)',marginTop:5,lineHeight:1.5,
+              whiteSpace:'pre-wrap'}}>
+              {entry.note.length>80 ? entry.note.slice(0,80)+'…' : entry.note}
+            </div>
+          )}
+        </div>
+        <div style={{ display:'flex', gap:4, flexShrink:0 }}>
+          <button className="btn btn-ghost btn-sm" title="編輯"
+            onClick={()=>setEditing(true)} style={{fontSize:14}}>✎</button>
+          <button className="btn btn-red btn-sm" title="刪除"
+            onClick={()=>onDelete(entry.id)}>✕</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ADD FORM
+══════════════════════════════════════════════════════════════ */
+function AddForm({ defaultDate, onAdd, defaultCat }) {
+  const [title, setTitle] = useState('');
+  const [cat,   setCat  ] = useState(defaultCat||'記事');
+  const [amt,   setAmt  ] = useState('');
+  const [amtT,  setAmtT ] = useState('expense');
+  const [note,  setNote ] = useState('');
+  const [date,  setDate ] = useState(defaultDate);
+  useEffect(()=>setDate(defaultDate),[defaultDate]);
+
+  function submit(e) {
+    e.preventDefault();
+    if (!title.trim()) return;
+    onAdd({
+      id:uid(), date, title:title.trim(), category:cat,
+      amount: amt ? parseFloat(amt) : null,
+      amtType: amt ? amtT : null,
+      note: note.trim(), createdAt:Date.now(),
+    });
+    setTitle(''); setAmt(''); setNote('');
+  }
+
+  return (
+    <form onSubmit={submit}>
+      <div style={{marginBottom:11}}>
+        <label className="f-label">日期</label>
+        <input type="date" className="f-input" value={date} onChange={e=>setDate(e.target.value)} />
+      </div>
+      <div style={{marginBottom:11}}>
+        <label className="f-label">標題 *</label>
+        <input type="text" className="f-input" value={title} onChange={e=>setTitle(e.target.value)}
+          placeholder="事件名稱…" required />
+      </div>
+      <div style={{marginBottom:11}}>
+        <label className="f-label">類別</label>
+        <select className="f-select" value={cat} onChange={e=>setCat(e.target.value)}>
+          {CAT_NAMES.map(n=><option key={n} value={n}>{n}</option>)}
+        </select>
+      </div>
+      <div style={{marginBottom:11}}>
+        <label className="f-label">金額（選填）</label>
+        <input type="number" className="f-input" value={amt}
+          onChange={e=>setAmt(e.target.value)} placeholder="0" min="0" step="any" />
+        {amt && (
+          <div className="amt-toggle">
+            <button type="button" className={`amt-btn inc ${amtT==='income'?'on':''}`}
+              onClick={()=>setAmtT('income')}>+ 收入</button>
+            <button type="button" className={`amt-btn exp ${amtT==='expense'?'on':''}`}
+              onClick={()=>setAmtT('expense')}>− 支出</button>
+          </div>
+        )}
+      </div>
+      <div style={{marginBottom:16}}>
+        <label className="f-label">備忘</label>
+        <textarea className="f-note" value={note} onChange={e=>setNote(e.target.value)}
+          rows={3} placeholder="備忘…" />
+      </div>
+      <button type="submit" className="btn btn-navy" style={{width:'100%'}}>新增項目</button>
+    </form>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PANEL CONTENT
+══════════════════════════════════════════════════════════════ */
+function PanelContent({ date, entries, onAdd, onUpdate, onDelete, onClose }) {
+  // Day panel shows only non-記帳 events, but mini-ledger uses 記帳 entries for financial context
+  const allDay  = entries.filter(e=>e.date===date);
+  const evtDay  = allDay.filter(e=>e.category!=='記帳');
+  const monDay  = allDay.filter(e=>e.category==='記帳');
+  const inc = monDay.filter(e=>e.amtType==='income').reduce((s,e)=>s+e.amount,0);
+  const exp = monDay.filter(e=>e.amtType==='expense').reduce((s,e)=>s+e.amount,0);
+
+  const dl = useMemo(()=>{
+    if (!date) return '';
+    const d=fromDS(date);
+    const wd=['日','一','二','三','四','五','六'][d.getDay()];
+    return { day:`${d.getMonth()+1}/${d.getDate()}`, sub:`週${wd}` };
+  },[date]);
+
+  return (
+    <div style={{padding:'18px 20px'}}>
+      <div className="panel-hdr">
+        <div className="panel-date">
+          {dl.day}<small>{dl.sub}</small>
+        </div>
+        <button className="close-btn" onClick={onClose}>×</button>
+      </div>
+
+      {/* Mini ledger (記帳 only, shown as financial context) */}
+      {(inc>0||exp>0) && (
+        <div className="mini-led">
+          {inc>0 && <div className="mini-led-col">
+            <div className="mini-led-label">收入</div>
+            <div className="mini-led-val" style={{color:'#006B3C'}}>+{inc.toLocaleString()}</div>
+          </div>}
+          {exp>0 && <div className="mini-led-col">
+            <div className="mini-led-label">支出</div>
+            <div className="mini-led-val" style={{color:'#CC2A00'}}>-{exp.toLocaleString()}</div>
+          </div>}
+          {inc>0&&exp>0 && <div className="mini-led-col">
+            <div className="mini-led-label">淨餘</div>
+            <div className="mini-led-val" style={{color:inc-exp>=0?'#006B3C':'#CC2A00'}}>
+              {inc-exp>=0?'+':''}{(inc-exp).toLocaleString()}
+            </div>
+          </div>}
+        </div>
+      )}
+
+      {/* Events */}
+      {evtDay.length===0 ? (
+        <div style={{textAlign:'center',color:'#BCBAB5',padding:'22px 0',fontSize:13}}>
+          這天還沒有行程
+        </div>
+      ) : evtDay.map(e=>(
+        <EntryItem key={e.id} entry={e} onUpdate={onUpdate} onDelete={onDelete} />
+      ))}
+
+      <div className="panel-section-title">新增項目</div>
+      <AddForm defaultDate={date} onAdd={onAdd} />
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CATEGORY FILTER PILLS
+══════════════════════════════════════════════════════════════ */
+function CatFilter({ active, onChange }) {
+  const cats = ['全部', ...CAL_CATS];
+  return (
+    <div className="cat-filter">
+      {cats.map(name => {
+        const isAll = name==='全部';
+        const isOn  = isAll ? active===null : active===name;
+        const c     = isAll ? null : CATS[name];
+        return (
+          <button key={name} className="cat-pill"
+            onClick={()=>onChange(isAll ? null : (active===name ? null : name))}
+            style={isOn ? {
+              background: isAll ? '#1A2B7A' : c.color,
+              color: '#fff',
+              borderColor: isAll ? '#1A2B7A' : c.color,
+            } : {
+              background: '#fff',
+              color: isAll ? '#1A2B7A' : c.text,
+              borderColor: isAll ? '#D6D5D0' : c.color+'55',
+            }}
+          >{name}</button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CALENDAR
+══════════════════════════════════════════════════════════════ */
+function CalCell({ date, entries, isCur, isToday, isSel, onSelect }) {
+  const ce   = entries.filter(e=>e.date===date); // already filtered for display
+  const dn   = fromDS(date).getDate();
+  const MAX  = 3;
+  return (
+    <div
+      className={`cal-cell ${isToday?'is-today':''} ${isSel?'is-selected':''} ${!isCur?'other-mo':''}`}
+      onClick={()=>onSelect(date)}
+    >
+      <div className="day-num">{dn}</div>
+      {ce.slice(0,MAX).map(e=><EvChip key={e.id} entry={e} onClick={()=>onSelect(date)} />)}
+      {ce.length>MAX && <div style={{fontSize:10,color:'#BCBAB5'}}>+{ce.length-MAX}</div>}
+    </div>
+  );
+}
+
+function CalView({ y, m, allEntries, calFilter, selDate, onSelect, monFirst }) {
+  const today = toDS(new Date());
+  const fd    = firstDow(y,m,monFirst);
+  const dim   = daysInMonth(y,m);
+  const pdim  = daysInMonth(y,m-1);
+  const wd    = monFirst ? WD_MON : WD_SUN;
+
+  // Only non-記帳, then apply category filter
+  const dispEntries = allEntries.filter(e =>
+    e.category !== '記帳' && (calFilter===null || e.category===calFilter)
+  );
+
+  const cells = [];
+  for (let i=0;i<fd;i++) cells.push({date:toDS(new Date(y,m-1,pdim-fd+i+1)),cur:false});
+  for (let d=1;d<=dim;d++) cells.push({date:toDS(new Date(y,m,d)),cur:true});
+  const rem=42-cells.length;
+  for (let d=1;d<=rem;d++) cells.push({date:toDS(new Date(y,m+1,d)),cur:false});
+
+  return (
+    <div>
+      <div className="cal-wk-row">
+        {wd.map(w=><div key={w} className="cal-wk-cell">{w}</div>)}
+      </div>
+      <div className="cal-grid">
+        {cells.map(({date,cur})=>(
+          <CalCell key={date} date={date} entries={dispEntries}
+            isCur={cur} isToday={date===today} isSel={date===selDate}
+            onSelect={onSelect} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEDGER VIEW  — 記帳 entries only
+══════════════════════════════════════════════════════════════ */
+function LedgerView({ y, m, entries }) {
+  // Only 記帳 entries for this month
+  const mo = entries.filter(e=>{
+    const [ey,em]=e.date.split('-').map(Number);
+    return ey===y && em===m+1 && e.category==='記帳';
+  }).sort((a,b)=>a.date.localeCompare(b.date));
+
+  const totalInc = mo.filter(e=>e.amtType==='income').reduce((s,e)=>s+e.amount,0);
+  const totalExp = mo.filter(e=>e.amtType==='expense').reduce((s,e)=>s+e.amount,0);
+  const net = totalInc - totalExp;
+
+  return (
+    <div>
+      <div className="sum-grid">
+        {[
+          {label:'收入', val:`+$${totalInc.toLocaleString()}`, color:'#006B3C'},
+          {label:'支出', val:`-$${totalExp.toLocaleString()}`, color:'#CC2A00'},
+          {label:'淨餘', val:`${net>=0?'+':''}$${Math.abs(net).toLocaleString()}`, color:net>=0?'#006B3C':'#CC2A00'},
+        ].map(({label,val,color})=>(
+          <div key={label} className="sum-card">
+            <div className="sum-label">{label}</div>
+            <div className="sum-val" style={{color}}>{val}</div>
+          </div>
+        ))}
+      </div>
+
+      {mo.length===0 ? (
+        <div style={{
+          background:'#fff', borderRadius:12, padding:'60px 0',
+          textAlign:'center', color:'#BCBAB5', fontSize:14,
+          border:'1.5px solid #D6D5D0',
+        }}>本月尚無帳目記錄</div>
+      ) : (
+        <div style={{background:'#fff',borderRadius:12,overflow:'hidden',border:'1.5px solid #D6D5D0'}}>
+          <table className="led-tbl">
+            <thead><tr>
+              <th>日期</th><th>項目</th><th style={{textAlign:'right'}}>金額</th>
+            </tr></thead>
+            <tbody>
+              {mo.map(e=>(
+                <tr key={e.id}>
+                  <td className="mono" style={{color:'#8F9BA3',fontSize:13,whiteSpace:'nowrap'}}>
+                    {e.date.slice(5).replace('-','/')}
+                  </td>
+                  <td>
+                    <div style={{fontWeight:500}}>{e.title}</div>
+                    {e.note&&<div style={{fontSize:12,color:'#BCBAB5',marginTop:2}}>{e.note.slice(0,40)}{e.note.length>40?'…':''}</div>}
+                  </td>
+                  <td className="mono" style={{
+                    textAlign:'right', fontWeight:700, whiteSpace:'nowrap',
+                    color:e.amtType==='income'?'#006B3C':'#CC2A00',
+                  }}>
+                    {e.amtType==='income'?'+':'-'}${Number(e.amount).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   QUICK ENTRY BAR
+══════════════════════════════════════════════════════════════ */
+function QuickBar({ onAdd }) {
+  const [val, setVal] = useState('');
+  const [pre, setPre] = useState(null);
+  const ref = useRef();
+
+  function onChange(e) {
+    const v=e.target.value; setVal(v);
+    setPre(v.trim().length>1 ? parseEntry(v) : null);
+  }
+  function submit() {
+    if (!val.trim()) return;
+    onAdd(parseEntry(val)); setVal(''); setPre(null); ref.current?.focus();
+  }
+  function onKey(e) { if (e.key==='Enter') submit(); }
+  const pc = pre ? CATS[pre.category]||CATS['記事'] : null;
+
+  return (
+    <div className="qe-wrap">
+      <div className="qe-bar">
+        <span className="qe-icon">✎</span>
+        <input ref={ref} className="qe-input" value={val}
+          onChange={onChange} onKeyDown={onKey}
+          placeholder="快速輸入… 例：6/1 開團 或 明天接案提案 或 $3000 房租" />
+        <button className="qe-submit" onClick={submit}>+</button>
+      </div>
+      {pre && (
+        <div className="qe-preview">
+          <span style={{color:'#BCBAB5',fontSize:12}}>預覽</span>
+          <span className="mono" style={{color:'#8F9BA3',fontSize:12}}>
+            {pre.date.slice(5).replace('-','/')}
+          </span>
+          <CatBadge cat={pre.category} />
+          <span style={{fontWeight:600,fontSize:13}}>{pre.title}</span>
+          {pre.amount!=null && (
+            <span className="mono" style={{fontWeight:700,fontSize:13,
+              color:pre.amtType==='income'?'#006B3C':'#CC2A00'}}>
+              {pre.amtType==='income'?'+':'-'}${Number(pre.amount).toLocaleString()}
+            </span>
+          )}
+          <span style={{marginLeft:'auto',color:'#BCBAB5',fontSize:11}}>Enter ↵</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   APP
+══════════════════════════════════════════════════════════════ */
+function App() {
+  const [entries, dispatch] = useReducer(reducer, []);
+  const [cur,     setCur   ] = useState(new Date());
+  const [selD,    setSelD  ] = useState(null);
+  const [panel,   setPanel ] = useState(false);
+  const [view,    setView  ] = useState('cal');
+  const [monF,    setMonF  ] = useState(false);
+  const [calFilt, setCalFilt] = useState(null);   // category filter for calendar
+  const [mob,     setMob   ] = useState(window.innerWidth < 700);
+
+  const y = cur.getFullYear();
+  const m = cur.getMonth();
+
+  useEffect(()=>{
+    const h=()=>setMob(window.innerWidth<700);
+    window.addEventListener('resize',h);
+    return ()=>window.removeEventListener('resize',h);
+  },[]);
+
+  useEffect(()=>{
+    try { const d=localStorage.getItem('naninj'); if(d) dispatch({type:'LOAD',data:JSON.parse(d)}); } catch{}
+  },[]);
+  useEffect(()=>{
+    try { localStorage.setItem('naninj',JSON.stringify(entries)); } catch{}
+  },[entries]);
+
+  function selectDate(d) { setSelD(d); setPanel(true); }
+  function closePanel()  { setPanel(false); }
+  function addEntry(e)   {
+    dispatch({type:'ADD',entry:e});
+    if (e.category!=='記帳' && e.date!==selD) { setSelD(e.date); setPanel(true); }
+  }
+  function upd(id,p) { dispatch({type:'UPDATE',id,patch:p}); }
+  function del(id)   { dispatch({type:'DELETE',id}); }
+
+  const prevMo = ()=>setCur(d=>new Date(d.getFullYear(),d.getMonth()-1,1));
+  const nextMo = ()=>setCur(d=>new Date(d.getFullYear(),d.getMonth()+1,1));
+  const goToday = ()=>{ setCur(new Date()); selectDate(toDS(new Date())); };
+
+  const showDP = !mob && panel && selD;
+
+  // Month label
+  const moStr = `${y} / ${String(m+1).padStart(2,'0')}`;
+
+  return (
+    <div style={{minHeight:'100vh',background:'var(--bg)'}}>
+
+      {/* ══ HEADER ══ */}
+      <header className="app-header">
+        <div className="app-logo">
+          NANI<span> NANJI</span>
+        </div>
+
+        <div className="tab-bar">
+          <button className={`tab-btn ${view==='cal'?'on':''}`} onClick={()=>setView('cal')}>
+            Calendar
+          </button>
+          <button className={`tab-btn ${view==='led'?'on':''}`} onClick={()=>setView('led')}>
+            Money
+          </button>
+        </div>
+
+        <div style={{display:'flex',gap:6}}>
+          <button className="hbtn" onClick={()=>setMonF(!monF)}>
+            {monF?'Mon start':'Sun start'}
+          </button>
+          <button className="hbtn accent" onClick={goToday}>Today</button>
+        </div>
+      </header>
+
+      {/* ══ MAIN ══ */}
+      <main style={{
+        padding:'16px 18px',
+        maxWidth: showDP ? 1160 : 880,
+        margin:'0 auto',
+        display:'grid',
+        gridTemplateColumns: showDP ? '1fr 360px' : '1fr',
+        gap:18, alignItems:'start',
+      }}>
+
+        {/* ── Left column ── */}
+        <div>
+          {/* Quick entry */}
+          <div style={{marginBottom:14}}>
+            <QuickBar onAdd={addEntry} />
+          </div>
+
+          {/* Month nav */}
+          <div className="mo-nav" style={{marginBottom:12}}>
+            <button className="mo-btn" onClick={prevMo}>‹</button>
+            <div className="mo-label dm">{moStr}</div>
+            <button className="mo-btn" onClick={nextMo}>›</button>
+          </div>
+
+          {/* Category filter (calendar only) */}
+          {view==='cal' && (
+            <div style={{marginBottom:12}}>
+              <CatFilter active={calFilt} onChange={setCalFilt} />
+            </div>
+          )}
+
+          {/* Calendar / Ledger */}
+          {view==='cal' ? (
+            <CalView y={y} m={m} allEntries={entries} calFilter={calFilt}
+              selDate={selD} onSelect={selectDate} monFirst={monF} />
+          ) : (
+            <LedgerView y={y} m={m} entries={entries} />
+          )}
+        </div>
+
+        {/* ── Desktop side panel ── */}
+        {showDP && (
+          <div className="desktop-panel">
+            <PanelContent
+              date={selD} entries={entries}
+              onAdd={addEntry} onUpdate={upd} onDelete={del}
+              onClose={closePanel}
+            />
+          </div>
+        )}
+      </main>
+
+      {/* ══ MOBILE BOTTOM SHEET ══ */}
+      {mob && (
+        <>
+          <div className={`overlay ${panel?'on':''}`} onClick={closePanel} />
+          <div className={`mobile-sheet ${panel?'on':''}`}>
+            <div className="drag-handle" />
+            {selD && (
+              <PanelContent
+                date={selD} entries={entries}
+                onAdd={addEntry} onUpdate={upd} onDelete={del}
+                onClose={closePanel}
+              />
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
