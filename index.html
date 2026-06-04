@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>NANI NANJI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700;9..40,900&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -476,21 +476,103 @@
   }
 
   /* ══════════════════════════════════════
-     MOBILE OVERRIDES
+     BOTTOM NAV BAR  (hidden on desktop)
   ══════════════════════════════════════ */
-  @media (max-width: 680px) {
-    .app-header { padding: 0 14px; }
-    .cal-cell { min-height: 64px; padding: 4px 4px 3px; border-radius: 6px; }
-    .day-num  { width: 22px; height: 22px; font-size: 11px; }
-    .ev-chip  { font-size: 10px; padding: 1px 5px; }
-    .mo-label { font-size: 18px; }
-    .sum-grid { grid-template-columns: repeat(3,1fr); gap: 7px; }
-    .sum-val  { font-size: 16px; }
+  .bottom-nav { display: none; }
+
+  .bnav-btn {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 3px;
+    border: none; background: none; cursor: pointer;
+    color: var(--stone);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 8px 0 6px;
+    transition: color 0.15s;
+    -webkit-tap-highlight-color: transparent;
   }
-  @media (max-width: 420px) {
-    .sum-grid { grid-template-columns: 1fr 1fr; }
-    .sum-grid > :last-child { grid-column: 1/-1; }
-    .app-logo { font-size: 16px; }
+  .bnav-btn.on { color: var(--navy); }
+  .bnav-icon {
+    font-size: 24px; line-height: 1; margin-bottom: 1px;
+    transition: transform 0.15s;
+  }
+  .bnav-btn.on .bnav-icon { transform: scale(1.12); }
+  .bnav-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--orange); opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .bnav-btn.on .bnav-dot { opacity: 1; }
+
+  /* ══════════════════════════════════════
+     MOBILE OVERRIDES  (≤ 700 px)
+  ══════════════════════════════════════ */
+  @media (max-width: 700px) {
+    /* Touch feel */
+    * { -webkit-tap-highlight-color: transparent; }
+
+    /* ── Header: leaner ── */
+    .app-header { padding: 0 16px; height: 52px; }
+    .app-logo   { font-size: 17px; }
+    .header-desktop-tabs  { display: none !important; }
+    .header-desktop-utils { display: none !important; }
+    /* Show only Today button in header on mobile */
+    .header-mobile-today { display: flex !important; }
+
+    /* ── Bottom nav: visible ── */
+    .bottom-nav {
+      display: flex;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--white);
+      border-top: 1.5px solid var(--border);
+      z-index: 35;
+      /* iPhone home indicator safe area */
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* ── Main: pad for bottom nav + safe area ── */
+    main {
+      padding: 12px 12px 0 !important;
+      padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    /* ── Quick entry ── */
+    .qe-bar    { padding: 12px 14px; border-radius: 14px; }
+    .qe-input  { font-size: 15px; }
+    .qe-submit { width: 40px; height: 40px; font-size: 26px; border-radius: 12px; }
+
+    /* ── Category pills ── */
+    .cat-pill { padding: 8px 15px; font-size: 12px; }
+
+    /* ── Month nav ── */
+    .mo-btn   { width: 44px; height: 44px; font-size: 20px; }
+    .mo-label { font-size: 20px; }
+
+    /* ── Calendar ── */
+    .cal-cell { min-height: 80px; padding: 6px 4px 4px; border-radius: 8px; }
+    .day-num  { width: 26px; height: 26px; font-size: 12px; margin-bottom: 4px; }
+    .ev-chip  { font-size: 11px; padding: 2px 6px; margin-bottom: 2px; border-radius: 20px; }
+
+    /* ── Mobile bottom sheet: taller + more radius ── */
+    .mobile-sheet { height: 90vh; border-radius: 24px 24px 0 0; }
+    .drag-handle  { width: 42px; height: 5px; margin: 14px auto 0; }
+
+    /* ── Summary cards ── */
+    .sum-grid { gap: 8px; }
+    .sum-card { padding: 13px 10px; }
+    .sum-label { font-size: 10px; }
+    .sum-val   { font-size: 18px; }
+
+    /* ── Ledger table: hide date col on very small ── */
+    .led-tbl td, .led-tbl th { padding: 10px 10px; }
+  }
+
+  @media (max-width: 380px) {
+    .app-logo   { font-size: 15px; }
+    .cal-cell   { min-height: 66px; }
+    .sum-grid   { grid-template-columns: 1fr 1fr; }
+    .sum-grid > :last-child { grid-column: 1 / -1; }
   }
   </style>
 </head>
@@ -1091,6 +1173,27 @@ function QuickBar({ onAdd }) {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   BOTTOM NAV (mobile only — rendered via CSS display:none on desktop)
+══════════════════════════════════════════════════════════════ */
+function BottomNav({ view, setView }) {
+  const tabs = [
+    { id:'cal', icon:'🗓', label:'Calendar' },
+    { id:'led', icon:'💰', label:'Money'    },
+  ];
+  return (
+    <nav className="bottom-nav">
+      {tabs.map(({id,icon,label}) => (
+        <button key={id} className={`bnav-btn ${view===id?'on':''}`} onClick={()=>setView(id)}>
+          <span className="bnav-icon">{icon}</span>
+          <span>{label}</span>
+          <span className="bnav-dot" />
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    APP
 ══════════════════════════════════════════════════════════════ */
 function App() {
@@ -1146,7 +1249,8 @@ function App() {
           NANI<span> NANJI</span>
         </div>
 
-        <div className="tab-bar">
+        {/* Desktop tabs — hidden on mobile via CSS */}
+        <div className="tab-bar header-desktop-tabs">
           <button className={`tab-btn ${view==='cal'?'on':''}`} onClick={()=>setView('cal')}>
             Calendar
           </button>
@@ -1155,12 +1259,17 @@ function App() {
           </button>
         </div>
 
-        <div style={{display:'flex',gap:6}}>
+        {/* Desktop util buttons — hidden on mobile */}
+        <div className="header-desktop-utils" style={{display:'flex',gap:6}}>
           <button className="hbtn" onClick={()=>setMonF(!monF)}>
             {monF?'Mon start':'Sun start'}
           </button>
           <button className="hbtn accent" onClick={goToday}>Today</button>
         </div>
+
+        {/* Mobile: only Today button in header */}
+        <button className="hbtn accent header-mobile-today"
+          style={{display:'none'}} onClick={goToday}>Today</button>
       </header>
 
       {/* ══ MAIN ══ */}
@@ -1231,6 +1340,9 @@ function App() {
           </div>
         </>
       )}
+
+      {/* ══ BOTTOM NAV (mobile) ══ */}
+      <BottomNav view={view} setView={setView} />
     </div>
   );
 }
